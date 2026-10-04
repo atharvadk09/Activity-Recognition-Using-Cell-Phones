@@ -1,98 +1,64 @@
-import pandas as pd
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("Agg")
 
+import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-# ==========================================
-# 1. Dataset path
-# ==========================================
+from load_data import load_data
 
-DATA_PATH = "data/UCI HAR Dataset/UCI HAR Dataset"
 
-# ==========================================
-# 2. Load data
-# ==========================================
+# Load dataset
+X_train, y_train, X_test, y_test, _, activity_labels = load_data()
 
-X_train = pd.read_csv(
-    f"{DATA_PATH}/train/X_train.txt",
-    sep=r"\s+",
-    header=None
-)
+X_train = X_train.to_numpy()
+X_test = X_test.to_numpy()
+y_train = y_train.to_numpy()
+y_test = y_test.to_numpy()
 
-y_train = pd.read_csv(
-    f"{DATA_PATH}/train/y_train.txt",
-    sep=r"\s+",
-    header=None
-).values.ravel()
 
-X_test = pd.read_csv(
-    f"{DATA_PATH}/test/X_test.txt",
-    sep=r"\s+",
-    header=None
-)
-
-y_test = pd.read_csv(
-    f"{DATA_PATH}/test/y_test.txt",
-    sep=r"\s+",
-    header=None
-).values.ravel()
-
-# ==========================================
-# 3. Activity names
-# ==========================================
-
-activity_labels = pd.read_csv(
-    f"{DATA_PATH}/activity_labels.txt",
-    sep=r"\s+",
-    header=None,
-    names=["id", "activity"]
-)
-
-activity_names = activity_labels["activity"].tolist()
-
-# ==========================================
-# 4. Train SVM
-# ==========================================
-
+# Train SVM
 print("Training SVM...")
 
-model = SVC(
+svm = SVC(
     kernel="rbf",
     C=10,
     gamma="scale"
 )
 
-model.fit(X_train, y_train)
+svm.fit(X_train, y_train)
 
 print("SVM training completed!")
 
-# ==========================================
-# 5. Predictions
-# ==========================================
 
-y_pred = model.predict(X_test)
+# Predictions
+y_pred = svm.predict(X_test)
 
-# ==========================================
-# 6. Confusion matrix
-# ==========================================
 
+# Confusion Matrix
 cm = confusion_matrix(y_test, y_pred)
 
 print("\nConfusion Matrix:")
 print(cm)
 
-# ==========================================
-# 7. Display confusion matrix
-# ==========================================
 
+# Activity names
+activity_names = activity_labels["activity"].tolist()
+
+
+# Create confusion matrix plot
 display = ConfusionMatrixDisplay(
     confusion_matrix=cm,
     display_labels=activity_names
 )
 
+fig, ax = plt.subplots(figsize=(9, 7))
+
 display.plot(
-    xticks_rotation=45
+    ax=ax,
+    xticks_rotation=45,
+    cmap="Blues",
+    values_format="d"
 )
 
 plt.title("SVM Confusion Matrix")
@@ -100,11 +66,12 @@ plt.tight_layout()
 
 # Save figure
 plt.savefig(
-    "svm_confusion_matrix.png",
+    "results/svm_confusion_matrix.png",
     dpi=300,
     bbox_inches="tight"
 )
 
-plt.show()
+plt.close()
 
-print("\nConfusion matrix saved as svm_confusion_matrix.png")
+print("\nConfusion matrix saved to:")
+print("results/svm_confusion_matrix.png")

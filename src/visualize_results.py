@@ -1,42 +1,52 @@
 import pandas as pd
+import matplotlib
+
+# Use a non-GUI backend so Tkinter is not required
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 
-# Load model results
+
+# Load model comparison results
 results = pd.read_csv("model_comparison_results.csv")
 
 print("Model Results:")
-print(results.to_string(index=False))
+print(results)
 
-# ==========================================
-# Accuracy comparison
-# ==========================================
 
+# Create accuracy comparison graph
 plt.figure(figsize=(8, 5))
 
 plt.bar(
     results["Model"],
-    results["Accuracy"]
+    results["Accuracy"] * 100
 )
 
 plt.title("Model Accuracy Comparison")
 plt.xlabel("Machine Learning Model")
-plt.ylabel("Accuracy")
-plt.ylim(0, 1)
+plt.ylabel("Accuracy (%)")
+plt.ylim(0, 100)
 
-# Display accuracy values above bars
-for i, value in enumerate(results["Accuracy"]):
+
+# Display accuracy values above each bar
+for i, accuracy in enumerate(results["Accuracy"]):
     plt.text(
         i,
-        value + 0.01,
-        f"{value:.3f}",
+        accuracy * 100 + 1,
+        f"{accuracy * 100:.2f}%",
         ha="center"
     )
 
+
 plt.tight_layout()
 
-# Save figure
-plt.savefig("model_accuracy_comparison.png", dpi=300)
 
-plt.show()
+# Save graph inside results folder
+plt.savefig(
+    "results/model_accuracy_comparison.png",
+    dpi=300
+)
 
-print("\nAccuracy graph saved as model_accuracy_comparison.png")
+
+print("\nAccuracy graph saved to:")
+print("results/model_accuracy_comparison.png")
