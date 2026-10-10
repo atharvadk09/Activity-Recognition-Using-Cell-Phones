@@ -518,7 +518,4 @@ This project was developed as a two-member machine learning project.
 - Repository Owner: `atharvadk09`
 - Project Contributor: `Anusha`
 ---
-## 24. Repository
-GitHub Repository:
-https://github.com/atharvadk09/Activity-Recognition-Using-Cell-Phones
 
